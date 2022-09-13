@@ -5,21 +5,6 @@
 #include <memory>
 #include <utility>
 
-template <class T> struct on_close {
-public:
-  explicit on_close(T func) : func{std::move(func)} {}
-  on_close(const on_close &other) = delete;
-  on_close &operator=(const on_close &other) = delete;
-  on_close(on_close &&other) noexcept = delete;
-  on_close &operator=(on_close &&other) noexcept = delete;
-  ~on_close() noexcept { std::move(func)(); }
-
-private:
-  T func;
-};
-
-template <class T> on_close(T) -> on_close<T>;
-
 int main(int argc, char **argv) {
   if (argc != 3) {
     fputs("Usage: bfc <input-file> <output-file>", stderr);
@@ -30,13 +15,11 @@ int main(int argc, char **argv) {
     fputs("Could not open input file", stderr);
     return 1;
   }
-  on_close handler_in{[&] { fclose(input_file); }};
   FILE *output_file = std::fopen(argv[2], "wb");
   if (!output_file) {
     fputs("Could not open output file", stderr);
     return 1;
   }
-  on_close handler_out{[&] { fclose(output_file); }};
 
   const auto put_value = [&](auto value) {
     fwrite(&value, sizeof(value), 1u, output_file);
@@ -248,6 +231,9 @@ int main(int argc, char **argv) {
   put32(0);                       // section info
   put32(1);                       // section alignment
   put32(0);                       // section has no entry size
+
+  fclose(input_file);
+  fclose(output_file);
 
   return 0;
 }
