@@ -107,6 +107,11 @@ int main(int argc, char **argv) {
   const auto file_name_offset = std::ftell(output_file);
   std::fwrite(argv[1], sizeof(char), std::strlen(argv[1]) + 1, output_file);
 
+  const auto text_section_sym_name_offset = std::ftell(output_file);
+  static const char text_section_name[] = ".text";
+  std::fwrite(text_section_name, sizeof(char), sizeof(text_section_name),
+              output_file);
+
   const auto main_function_name_offset = std::ftell(output_file);
   static const char main_function_name[] = "main";
   std::fwrite(main_function_name, sizeof(char), sizeof(main_function_name),
@@ -124,6 +129,7 @@ int main(int argc, char **argv) {
   put8(0);
   put8(0);
   put16(0);
+
   // write file symbol
   put32(file_name_offset - strtab_section_offset);
   put32(0);
@@ -131,6 +137,15 @@ int main(int argc, char **argv) {
   put8(0b00000100); // STB_LOCAL, STT_FILE
   put8(0);
   put16(0);
+
+  // write .text symbol
+  put32(text_section_sym_name_offset - strtab_section_offset);
+  put32(0);
+  put32(text_section_end_offset - text_section_offset);
+  put8(0b00000011); // STB_LOCAL, STT_SECTION
+  put8(0);
+  put16(0);
+
   // write main symbol
   put32(main_function_name_offset - strtab_section_offset);
   put32(0);
@@ -144,7 +159,6 @@ int main(int argc, char **argv) {
   // write .shstrtab
   const auto shstrtab_section_offset = std::ftell(output_file);
   put8(0);
-  static const char text_section_name[] = ".text";
   const auto text_section_name_offset = std::ftell(output_file);
   std::fwrite(text_section_name, sizeof(char), sizeof(text_section_name),
               output_file);
