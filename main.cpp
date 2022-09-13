@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
 
   // write main symbol
   put32(main_function_name_offset - strtab_section_offset);
-  put32(0);
+  put32(0 + 1); // add 1 to indicate that this is thumb code
   put32(text_section_end_offset - text_section_offset);
   put8(0b00010010); // STB_GLOBAL, STT_FUNC
   put8(0);
