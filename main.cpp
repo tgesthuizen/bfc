@@ -103,6 +103,7 @@ int main(int argc, char **argv) {
 
   // write .strtab
   const auto strtab_section_offset = std::ftell(output_file);
+  put8(0);
   const auto file_name_offset = std::ftell(output_file);
   std::fwrite(argv[1], sizeof(char), std::strlen(argv[1]) + 1, output_file);
 
