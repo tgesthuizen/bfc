@@ -217,7 +217,7 @@ int main(int argc, char **argv) {
   put32(symtab_section_end_offset -
         symtab_section_offset); // size of the section in the file image
   put32(2);                     // section link - reference .strtab
-  put32(0);                     // section info
+  put32(3);                     // section info - reference first global symbol
   put32(1);                     // section alignment
   put32(0x10);                  // symtab entry size
 
