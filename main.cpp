@@ -44,14 +44,14 @@ int main(int argc, char **argv) {
   put32(0);                             // Entry point
   put32(0);                             // Program header table offset
   const auto section_header_table_offset = std::ftell(output_file);
-  put32(0);                 // offset of first section header
-  put32(0x20 | 0x05000000); // flags for the architecture: PIC, arm eabi ver 5
-  put16(0x34);              // size of this header
-  put16(0);                 // program header entry size
-  put16(0);                 // program header count
-  put16(0x28);              // section header size
-  put16(5);                 // section count
-  put16(4);                 // section name string table section
+  put32(0);          // offset of first section header
+  put32(0x05000000); // flags for the architecture: arm eabi ver 5
+  put16(0x34);       // size of this header
+  put16(0);          // program header entry size
+  put16(0);          // program header count
+  put16(0x28);       // section header size
+  put16(5);          // section count
+  put16(4);          // section name string table section
 
   // write the .text section
   const auto text_section_offset = std::ftell(output_file);
