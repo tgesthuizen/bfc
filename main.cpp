@@ -73,10 +73,10 @@ int main(int argc, char **argv) {
       put16(0b0001111001001001); // add r0, r0, #1
       put16(0b0111000000000001); // strb r1, [r0]
       break;
-    case '.':
+    case ',':
       put16(0b0100011110011000); // blx r3
       break;
-    case ',':
+    case '.':
       put16(0b0100011110100000); // blx r4
       break;
     }
