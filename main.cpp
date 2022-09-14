@@ -195,7 +195,7 @@ int main(int argc, char **argv) {
   // write .strtab section header
   put32(strtab_section_name_offset - shstrtab_section_offset);
   put32(0x3);                   // section type strtab
-  put32(0x20);                  // section contains strings
+  put32(0);                     // section has no flags
   put32(0);                     // virtual address of the section
   put32(strtab_section_offset); // offset of the section in the file image
   put32(strtab_section_end_offset -
@@ -222,7 +222,7 @@ int main(int argc, char **argv) {
   // write .shstrtab section header
   put32(shstrtab_section_name_offset - shstrtab_section_offset);
   put32(0x3);                     // section type strtab
-  put32(0x20);                    // section contains strings
+  put32(0);                       // section has no flags
   put32(0);                       // virtual address of the section
   put32(shstrtab_section_offset); // offset of the section in the file image
   put32(shstrtab_section_end_offset -
