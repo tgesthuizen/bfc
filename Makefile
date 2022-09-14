@@ -1,4 +1,4 @@
-ARM_TOOLS := /home/tibbe/src/micros/env/bin
+ARM_TOOLS := env/bin
 PROGRAMS := t1 t2 add hello_world
 
 all: $(PROGRAMS)
