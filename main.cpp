@@ -4,6 +4,22 @@
 #include <elf.h>
 #include <memory>
 #include <utility>
+#include <vector>
+
+template <std::size_t N, class T = int> struct n_bits_set {
+  static constexpr T value = n_bits_set<N - 1>::value | 1 << N;
+};
+template <class T> struct n_bits_set<0, T> { static constexpr T value{1}; };
+
+template <std::size_t N, class T = int>
+inline constexpr T n_bits_set_v{n_bits_set<N, T>::value};
+
+template <std::size_t Bits, class T>
+std::make_unsigned_t<T> truncate_signed(T value) {
+  printf("Target value is %d\n", static_cast<int>(value));
+  return static_cast<std::make_unsigned_t<T>>((value < 0) << (Bits - 1)) |
+         (value & n_bits_set_v<Bits - 2, T>);
+}
 
 int main(int argc, char **argv) {
   if (argc != 3) {
@@ -55,6 +71,8 @@ int main(int argc, char **argv) {
 
   // write the .text section
   const auto text_section_offset = std::ftell(output_file);
+  std::vector<long> loop_bases;
+  put16(0b1011010100000000); // push {lr}
   for (char c = std::getc(input_file); c != EOF; c = std::getc(input_file)) {
     switch (c) {
     case '<':
@@ -79,9 +97,27 @@ int main(int argc, char **argv) {
     case '.':
       put16(0b0100011110100000); // blx r4
       break;
+    case '[':
+      loop_bases.push_back(std::ftell(output_file));
+      put16(0b0111100000000001); // ldrb r1, [r0]
+      put16(0b0100001000001001); // tst r1, r1
+      put16(0b1101000000000000); // beq #0 -> to be patched
+      break;
+    case ']': {
+      const auto loop_begin = loop_bases.back();
+      loop_bases.pop_back();
+      const auto cur_pos = std::ftell(output_file);
+      put16(0b1110000000000000 |
+            (truncate_signed<11u>((loop_begin - cur_pos - 4) / 2)));
+      const auto loop_end = std::ftell(output_file);
+      std::fseek(output_file, loop_begin + 4, SEEK_SET);
+      put16(0b1101000000000000 |
+            truncate_signed<8u>((loop_end - (loop_begin + 4) - 4) / 2));
+      std::fseek(output_file, loop_end, SEEK_SET);
+    } break;
     }
   }
-  put16(0b0100011101110000); // bx lr
+  put16(0b1011110100000000); // pop {pc}
   const auto text_section_end_offset = std::ftell(output_file);
 
   // write .strtab
