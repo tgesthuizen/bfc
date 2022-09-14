@@ -16,7 +16,6 @@ inline constexpr T n_bits_set_v{n_bits_set<N, T>::value};
 
 template <std::size_t Bits, class T>
 std::make_unsigned_t<T> truncate_signed(T value) {
-  printf("Target value is %d\n", static_cast<int>(value));
   return static_cast<std::make_unsigned_t<T>>((value < 0) << (Bits - 1)) |
          (value & n_bits_set_v<Bits - 2, T>);
 }
