@@ -1,5 +1,5 @@
 ARM_TOOLS := /home/tibbe/src/micros/env/bin
-PROGRAMS := t1 t2
+PROGRAMS := t1 t2 add hello_world
 
 all: $(PROGRAMS)
 
