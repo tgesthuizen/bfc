@@ -19,7 +19,6 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
-#include <elf.h>
 #include <memory>
 #include <utility>
 #include <vector>
