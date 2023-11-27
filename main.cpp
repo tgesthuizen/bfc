@@ -23,18 +23,14 @@
 #include <utility>
 #include <vector>
 
-template <std::size_t N, class T = int> struct n_bits_set {
-  static constexpr T value = n_bits_set<N - 1>::value | 1 << N;
-};
-template <class T> struct n_bits_set<0, T> { static constexpr T value{1}; };
-
-template <std::size_t N, class T = int>
-inline constexpr T n_bits_set_v{n_bits_set<N, T>::value};
+template <class T = int> constexpr T n_bits_set(std::size_t n) {
+  return (1 << (n + 1)) - 1;
+}
 
 template <std::size_t Bits, class T>
 std::make_unsigned_t<T> truncate_signed(T value) {
   return static_cast<std::make_unsigned_t<T>>((value < 0) << (Bits - 1)) |
-         (value & n_bits_set_v<Bits - 2, T>);
+         (value & n_bits_set<T>(Bits - 2));
 }
 
 int main(int argc, char **argv) {
