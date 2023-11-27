@@ -28,7 +28,7 @@ template <class T = int> constexpr T n_bits_set(std::size_t n) {
 }
 
 template <std::size_t Bits, class T>
-std::make_unsigned_t<T> truncate_signed(T value) {
+constexpr std::make_unsigned_t<T> truncate_signed(T value) {
   return static_cast<std::make_unsigned_t<T>>((value < 0) << (Bits - 1)) |
          (value & n_bits_set<T>(Bits - 2));
 }
