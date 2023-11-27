@@ -143,6 +143,11 @@ int main(int argc, char **argv) {
   std::fwrite(text_section_name, sizeof(char), sizeof(text_section_name),
               output_file);
 
+  const auto thumb_sym_name_offset = std::ftell(output_file);
+  static const char thumb_sym_name[] = "$t";
+  std::fwrite(thumb_sym_name, sizeof(char), sizeof(thumb_sym_name),
+              output_file);
+
   const auto main_function_name_offset = std::ftell(output_file);
   static const char main_function_name[] = "main";
   std::fwrite(main_function_name, sizeof(char), sizeof(main_function_name),
@@ -176,6 +181,14 @@ int main(int argc, char **argv) {
   put8(0b00000011); // STB_LOCAL, STT_SECTION
   put8(0);
   put16(0);
+
+  // write $t symbol
+  put32(thumb_sym_name_offset - strtab_section_offset);
+  put32(1); // No value
+  put32(0); // No size
+  put8(0);  // STB_LOCAL, STT_NOTYPE
+  put8(1);
+  put16(1); // text section index
 
   // write main symbol
   put32(main_function_name_offset - strtab_section_offset);
@@ -263,7 +276,7 @@ int main(int argc, char **argv) {
   put32(symtab_section_end_offset -
         symtab_section_offset); // size of the section in the file image
   put32(2);                     // section link - reference .strtab
-  put32(3);                     // section info - reference first global symbol
+  put32(4);                     // section info - reference first global symbol
   put32(1);                     // section alignment
   put32(0x10);                  // symtab entry size
 
