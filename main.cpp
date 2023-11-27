@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
   // write the .text section
   const auto text_section_offset = std::ftell(output_file);
   std::vector<long> loop_bases;
-  put16(0b1011010100000000); // push {lr}
+  put16(0b1011010110000000); // push {r7, lr}
   for (char c = std::getc(input_file); c != EOF; c = std::getc(input_file)) {
     switch (c) {
     case '<':
@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
     } break;
     }
   }
-  put16(0b1011110100000000); // pop {pc}
+  put16(0b1011110110000000); // pop {r7, pc}
   const auto text_section_end_offset = std::ftell(output_file);
 
   // write .strtab
